@@ -130,40 +130,41 @@ always @ (posedge clk or posedge reset)
   always @ (current_state or posedge clk)
     begin: OUTPUT_LOGIC
         case (current_state)
-            S0 : char = signal_to_display[11:8];
+            S0 : char <= signal_to_display[11:8];
             S2 : begin
                     an3 = 1'b1;
                     an2 = 1'b0;
                     an1 = 1'b1;
                     an0 = 1'b1;
                  end   
-            S4 : char = signal_to_display[7:4]; 
+            S4 : char <= signal_to_display[7:4]; 
             S6 : begin
                     an3 = 1'b1;
                     an2 = 1'b1;
                     an1 = 1'b0;
                     an0 = 1'b1;
                  end 
-            S8 : char = signal_to_display[3:0];
+            S8 : char <= signal_to_display[3:0];
             S10 : begin
                     an3 = 1'b1;
                     an2 = 1'b1;
                     an1 = 1'b1;
                     an0 = 1'b0;
                  end   
-            S12 : char = signal_to_display[15:12];
+            S12 : char <= signal_to_display[15:12];
             S14 : begin
                     an3 = 1'b0;
                     an2 = 1'b1;
                     an1 = 1'b1;
                     an0 = 1'b1;
                  end  
-            default: begin
-                        an3 = 1'b1;
-                        an2 = 1'b1;
-                        an1 = 1'b1;
-                        an0 = 1'b1;
-                     end  
+            default: 
+              	 begin
+                    an3 = 1'b1;
+                    an2 = 1'b1;
+                    an1 = 1'b1;
+                    an0 = 1'b1;
+                 end  
         endcase 
     end
 
@@ -171,8 +172,25 @@ always @ (posedge clk or posedge reset)
 //	Decoder	Instantiation	  //
 ////////////////////////////////
 LEDdecoder LEDdecoderINSTANCE (.char(char),.LED(LED));
-
-
+  
+//   always@(posedge reset) dp = 1'b1; // dp is always off
+always@(posedge reset)
+  begin
+    dp = 1'b1; // dp is always off
+  end
+  
+always@(posedge clk)
+  begin
+      begin
+        a <= LED[6];
+        b <= LED[5];
+        c <= LED[4];
+        d <= LED[3];
+        e <= LED[2];
+        f <= LED[1];
+        g <= LED[0];
+      end
+  end 
 //////////////////////////////////////////////////
 //		Counter for the 16 states of anodes		//
 //////////////////////////////////////////////////
