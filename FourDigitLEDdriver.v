@@ -20,12 +20,21 @@ output a, b, c, d, e, f, g;	//	our signals
 //	     ------      .dp
 //			d
 
-reg a,b,c,d,e,f,g,dp;
+wire a,b,c,d,e,f,g,dp;
 reg an0,an1,an2,an3;
 wire [6:0] LED;
 
 reg [3:0] char; // based on your received message, use this 4bit signal to drive our decoder
 reg [3:0] counter; // counter to compute the time that the anodes will be active
+  
+assign a = LED[6];
+assign b = LED[5];
+assign c = LED[4];
+assign d = LED[3];
+assign e = LED[2];
+assign f = LED[1];
+assign g = LED[0];
+assign dp = 1'b1;
 
 //////////////////
 //		FSM		//
@@ -173,24 +182,6 @@ always @ (posedge clk or posedge reset)
 ////////////////////////////////
 LEDdecoder LEDdecoderINSTANCE (.char(char),.LED(LED));
   
-//   always@(posedge reset) dp = 1'b1; // dp is always off
-always@(posedge reset)
-  begin
-    dp = 1'b1; // dp is always off
-  end
-  
-always@(posedge clk)
-  begin
-      begin
-        a <= LED[6];
-        b <= LED[5];
-        c <= LED[4];
-        d <= LED[3];
-        e <= LED[2];
-        f <= LED[1];
-        g <= LED[0];
-      end
-  end 
 //////////////////////////////////////////////////
 //		Counter for the 16 states of anodes		//
 //////////////////////////////////////////////////
