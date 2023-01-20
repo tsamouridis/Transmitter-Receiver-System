@@ -7,19 +7,19 @@ output sample_ENABLE;
 
 reg [4:0] counter;
 reg sample_ENABLE;
-reg [4:0] reverse_sample_ENABLE = 5'd00000;
+reg [4:0] reverse_sample_ENABLE = 4'd0000;
 
 always @ (baud_select)
 begin
     case(baud_select)
-        3'b000 : reverse_sample_ENABLE = 10417;
-        3'b001 : reverse_sample_ENABLE = 2604;
-        3'b010 : reverse_sample_ENABLE = 651;
-        3'b011 : reverse_sample_ENABLE = 326;
-        3'b100 : reverse_sample_ENABLE = 163;
-        3'b101 : reverse_sample_ENABLE = 81;
-        3'b110 : reverse_sample_ENABLE = 54;
-        3'b111 : reverse_sample_ENABLE = 27;
+        3'b000 : reverse_sample_ENABLE = 5208;
+        3'b001 : reverse_sample_ENABLE = 1302;
+        3'b010 : reverse_sample_ENABLE = 326;
+        3'b011 : reverse_sample_ENABLE = 163;
+        3'b100 : reverse_sample_ENABLE = 81;
+        3'b101 : reverse_sample_ENABLE = 41;
+        3'b110 : reverse_sample_ENABLE = 27;
+        3'b111 : reverse_sample_ENABLE = 14;
     endcase  
 end
 
@@ -29,13 +29,13 @@ begin
 	if (reset)
 	begin
         sample_ENABLE = 1'b0;
-		counter = 5'd1;
+		counter = 4'd1;
 	end	
 	else 
 	begin
 		if (counter == reverse_sample_ENABLE)
 		begin
-			counter = 5'd1;
+			counter = 4'd0001;
             sample_ENABLE = ~ sample_ENABLE;
 		end
 		else
