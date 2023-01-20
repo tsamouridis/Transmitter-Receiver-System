@@ -7,6 +7,8 @@ T_half_sample_desired_nanosec = T_sample_desired_nanosec./2;
 
 clocks_till_reverse = round(T_half_sample_desired_nanosec./20)
 
+clock_period = 20;
+T_final = clocks_till_reverse*2*clock_period
 
 
 
