@@ -7,7 +7,7 @@ output sample_ENABLE;
 
 reg [13:0] counter;
 reg sample_ENABLE;
-reg [13:0] reverse_sample_ENABLE = 4'd0; μ//! is it ok?
+reg [13:0] reverse_sample_ENABLE = 4'd0; //! is it ok?
 
 always @ (baud_select)
 begin
