@@ -5,9 +5,9 @@ input clk, reset;
 input [2:0] baud_select; 
 output sample_ENABLE;
 
-reg [4:0] counter;
+reg [13:0] counter;
 reg sample_ENABLE;
-reg [4:0] reverse_sample_ENABLE = 4'd0000;
+reg [13:0] reverse_sample_ENABLE;
 
 always @ (baud_select)
 begin
@@ -28,19 +28,20 @@ always @ (posedge clk or posedge reset)
 begin
 	if (reset)
 	begin
+		reverse_sample_ENABLE = 14'd0;
         sample_ENABLE = 1'b0;
-		counter = 4'd1;
+		counter = 14'd1;
 	end	
 	else 
 	begin
 		if (counter == reverse_sample_ENABLE)
 		begin
-			counter = 4'd0001;
+			counter = 14'd1;
             sample_ENABLE = ~ sample_ENABLE;
 		end
 		else
 		begin
-			counter = counter + 1'd1;
+			counter = counter + 1;
 		end
 	end
 end
