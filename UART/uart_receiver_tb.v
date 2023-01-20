@@ -1,18 +1,16 @@
 `timescale 1ns / 1ps
 
-module uart_transmitter_tb;
+module uart_receiver_tb;
 
 reg give_clk, give_reset;
-reg [7:0] give_Tx_DATA; 
-reg [2:0]give_baud_select; 
-reg give_Tx_EN; 
-reg give_Tx_WR; 
+reg [7:0] give_Rx_DATA; 
+reg [2:0] give_baud_select; 
+reg give_Rx_EN;  
   
-wire TxD;
-wire Tx_BUSY;
+wire RxD;
+wire Tx_BUSY, Rx_FERROR, Rx_PERROR, Rx_VALID;
 
-uart_transmitter transmitter_test (.reset(give_reset), .clk(give_clk), .Tx_DATA(give_Tx_DATA), .baud_select(give_baud_select), .Tx_WR(give_Tx_WR), .Tx_EN(give_Tx_EN), .TxD(TxD), .Tx_BUSY(Tx_BUSY)); 
-
+uart_receiver receiver_test(.reset(give_reset), .clk(give_clk), .Rx_DATA(give_Rx_DATA), .baud_select(give_baud_select), .RX_EN(give_Rx_EN), .RxD(RxD), .Rx_FERROR(Rx_FERROR), .Rx_PERROR(Rx_PERROR), .Rx_VALID(Rx_VALID));
 
 initial begin
 
@@ -23,24 +21,17 @@ initial begin
 					
 	give_reset = 0; // set reset signal to 0
 			
-	#200000 $finish;	 // after 10000 timing units, i.e. ns, finish our simulation
+	#200000 $finish;	 // after 200000 timing units, i.e. ns, finish our simulation
 end
   
 initial begin
 	$dumpfile("dump.vcd"); $dumpvars;
-	give_Tx_EN = 1'b1;
+	give_Rx_EN = 1'b1;
 	give_baud_select = 3'b111;
 	
-	give_Tx_DATA = 8'b10011010;
-    #100 give_Tx_WR = 1'b1;
+	give_Rx_DATA = 8'b10011010;
 end  
 	
 always #10 give_clk = ~ give_clk; // create our clock, with a period of 20ns
-
-// always@(posedge give_clk)
-// begin
-
-// end
-
   
 endmodule

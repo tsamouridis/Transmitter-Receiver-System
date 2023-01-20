@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module FourDigitLEDdriver(reset, clk, Rx_DATA, baud_select, RX_EN, RxD, Rx_FERROR, Rx_PERROR, Rx_VALID);
+module uart_receiver(reset, clk, Rx_DATA, baud_select, RX_EN, RxD, Rx_FERROR, Rx_PERROR, Rx_VALID);
 
 input clk, reset;
 input [2:0] baud_select;
