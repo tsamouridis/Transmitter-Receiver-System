@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-`include "LEDdecoder.sv"
+`include "LEDdecoder.v"
 
 module FourDigitLEDdriver(reset, clk, signal_to_display, an3, an2, an1, an0, a, b, c, d, e, f, g, dp);
 
