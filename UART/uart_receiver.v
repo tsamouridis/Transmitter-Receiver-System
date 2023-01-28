@@ -18,8 +18,8 @@ reg [7:0] Rx_DATA;
 
 reg [3:0] current_state, next_state;
 reg [4:0] counter_1_period = 5'd00000;
-reg [14:0] rises_in_1_period;
-reg [14:0] rises_in_half_period;
+// reg [14:0] rises_in_1_period;
+// reg [14:0] rises_in_half_period;
 // reg [4:0] counter_8_periods = 5'd00000;
 reg temp_out;
 reg xor_result;
@@ -40,14 +40,14 @@ parameter WAIT = 4'b0000,
           D7 = 4'b1001,
           PARITY = 4'b1010,
           STOP = 4'b1011,
-          OUTPUT = 4'b1110;
+          OUTPUT = 4'b1100;
 
 ////////////////////////////////////
 //	Baud Controler Instantiation  //
 ////////////////////////////////////
 baud_controller baud_controller_instance(.reset(reset), .clk(clk), .baud_select(baud_select), .sample_ENABLE(Rx_sample_ENABLE));
 
-always @ (posedge clk or posedge reset) 
+always @ (posedge Rx_sample_ENABLE or posedge reset) 
     // receiver leaves WAIT state only if Rx_EN is 1
 	begin: STATE_MEMORY 
       if (reset || ~RX_EN)
@@ -56,7 +56,7 @@ always @ (posedge clk or posedge reset)
 		 	current_state <= next_state; 
 	end
 
-always @ (current_state or posedge clk)
+always @ (current_state or posedge Rx_sample_ENABLE)
     begin: NEXT_STATE_LOGIC
     // period stands for one period of Rx_sample_ENABLE
     // Stays at WAIT till starting bit (till RxD becomes zero)
@@ -65,64 +65,64 @@ always @ (current_state or posedge clk)
     // Stays at PARITY for 1 period
     // Stays at OUTPUT for 1 period
         case (current_state)
-            WAIT : if(RxD == 0)
+            WAIT : if(RxD == 0) begin
                     next_state = START;
-                 else begin
+                end     
+                else begin
                     next_state = WAIT;
-                    counter_1_period = 1'b0;
                  end
-            START : if(counter_1_period == rises_in_1_period)
+            START : if(counter_1_period == 16)
                     next_state = D0;
                  else 
                     next_state = START;
-            D0 : if(counter_1_period == rises_in_1_period)
+            D0 : if(counter_1_period == 16)
                     next_state = D1;
                  else 
                     next_state = D0;  
-            D1 : if(counter_1_period == rises_in_1_period)
+            D1 : if(counter_1_period == 16)
                     next_state = D2;
                  else 
                     next_state = D1;  
-            D2 : if(counter_1_period == rises_in_1_period)
+            D2 : if(counter_1_period == 16)
                     next_state = D3;
                  else 
                     next_state = D2;  
-            D3 : if(counter_1_period == rises_in_1_period)
+            D3 : if(counter_1_period == 16)
                     next_state = D4;
                  else 
                     next_state = D3;  
-            D4 : if(counter_1_period == rises_in_1_period)
+            D4 : if(counter_1_period == 16)
                     next_state = D5;
                  else 
                     next_state = D4;  
-            D5 : if(counter_1_period == rises_in_1_period)
+            D5 : if(counter_1_period == 16)
                     next_state = D6;
                  else 
                     next_state = D5;  
-            D6 : if(counter_1_period == rises_in_1_period)
+            D6 : if(counter_1_period == 16)
                     next_state = D7;
                  else 
                     next_state = D6;   
-            D7 : if(counter_1_period == rises_in_1_period)
+            D7 : if(counter_1_period == 16)
                     next_state = PARITY;
                  else 
                     next_state = D7;   
-            PARITY : if(counter_1_period == rises_in_1_period)
+            PARITY : if(counter_1_period == 16)
                     next_state = STOP;
                  else 
                     next_state = PARITY;
-            STOP : if(counter_1_period == rises_in_1_period)
+            STOP : if(counter_1_period == 16)
                     next_state = OUTPUT;
                  else 
                     next_state = STOP; 
-            OUTPUT : if(counter_1_period == rises_in_1_period)
+            OUTPUT : if(counter_1_period == 16)
                     next_state = WAIT;
                  else 
                     next_state = OUTPUT;
         endcase
     end
 
-  always @ (current_state or posedge clk)
+  always @ (current_state or posedge Rx_sample_ENABLE)
     begin: OUTPUT_LOGIC
         // For the formation of RxD, receiver samples the received message RxDATA
         // at every positive edge of clock, except for the clock that appears at
@@ -134,222 +134,258 @@ always @ (current_state or posedge clk)
                 Rx_FERROR = 1'b0;
                 Rx_PERROR = 1'b0;
                 Rx_VALID = 1'b0;
-                // counter_1_period = 1'b1;
+                counter_1_period = 1;
                 // and other things++
             end
 
             START : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
+                if(counter_1_period == 2)
                     temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
-                else begin
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
                     if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
-                end   
+                end
+                else
+                    temp_out = temp_out;// do nothing
             end
 
             D0 : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
                     if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
-                        Rx_FERROR = 1'b1;   // framing error detected   // framing error detected
-                    else
+                        Rx_FERROR = 1'b1;   // framing error detected
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[0] = RxD;
-                    else
-                        Rx_DATA[0] = Rx_DATA[0];
-                end 
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[0] = RxD;
+                else
+                    Rx_DATA[0] = Rx_DATA[0];
             end
             
             D1 : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
-                    xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)    // if xor gives 1 it means we got a change in the first period
-                        Rx_FERROR = 1'b1;   // framing error detected   // framing error detected
-                    else
-                        Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[1] = RxD;
-                    else
-                        Rx_DATA[1] = Rx_DATA[1];
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
 
-                end 
+                    xor_result = RxD ^ temp_out;
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                        Rx_FERROR = 1'b1;   // framing error detected
+                    else 
+                        Rx_FERROR = Rx_FERROR;
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[1] = RxD;
+                else
+                    Rx_DATA[1] = Rx_DATA[1];
             end 
 
             D2 : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)     // if xor gives 1 it means we got a change in the first period
-                        Rx_FERROR = 1'b1;   // framing error detected   // framing error detected
-                    else
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                        Rx_FERROR = 1'b1;   // framing error detected
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[2] = RxD;
-                    else
-                        Rx_DATA[2] = Rx_DATA[2];
-                end 
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[2] = RxD;
+                else
+                    Rx_DATA[2] = Rx_DATA[2];
             end 
             
             D3 :  begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)    // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
                         Rx_FERROR = 1'b1;   // framing error detected
-                    else
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[3] = RxD;
-                    else
-                        Rx_DATA[3] = Rx_DATA[3];
-                end 
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[3] = RxD;
+                else
+                    Rx_DATA[3] = Rx_DATA[3];
             end 
 
             D4 :  begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)    // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
                         Rx_FERROR = 1'b1;   // framing error detected
-                    else
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[4] = RxD;
-                    else
-                        Rx_DATA[4] = Rx_DATA[4];
-                end 
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[4] = RxD;
+                else
+                    Rx_DATA[4] = Rx_DATA[4];
             end 
 
             D5 : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)     // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
                         Rx_FERROR = 1'b1;   // framing error detected
-                    else
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[5] = RxD;
-                    else
-                        Rx_DATA[5] = Rx_DATA[5];
-                end 
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[5] = RxD;
+                else
+                    Rx_DATA[5] = Rx_DATA[5];
             end 
             
             D6 : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)    // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
                         Rx_FERROR = 1'b1;   // framing error detected
-                    else
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[6] = RxD;
-                    else
-                        Rx_DATA[6] = Rx_DATA[6];
-                end 
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[6] = RxD;
+                else
+                    Rx_DATA[6] = Rx_DATA[6];
             end 
             
             D7 : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out = RxD; //first sample of the bit at the second posedge of clk.
-                else begin
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)     // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
                         Rx_FERROR = 1'b1;   // framing error detected
-                    else
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                    // when half a period(approximately sometimes) passes show RxD in the output
-                    if(Rx_FERROR == 0 && counter_1_period == rises_in_half_period)
-                        Rx_DATA[7] = RxD;
-                    else
-                        Rx_DATA[7] = Rx_DATA[7];
-                end 
+                end
+                else
+                    temp_out = temp_out;// do nothing
+
+                // when half a period(approximately sometimes) passes show RxD in the output
+                if(Rx_FERROR == 0 && counter_1_period == 8)
+                    Rx_DATA[7] = RxD;
+                else
+                    Rx_DATA[7] = Rx_DATA[7];
             end 
 
             PARITY : begin
-
-                // Parity error check
                 expected_parity = ^(Rx_DATA);
-                if(counter_1_period == 1)
-                    temp_out <= temp_out;// do nothing
-                else if(counter_1_period == 2)
-                    temp_out <= RxD; //first sample of the bit at the second posedge of clk.
-                else begin
-                    xor_result <= RxD ^ temp_out;
+
+                // Framing error check 
+                if(counter_1_period == 2)
+                    temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+                    
+                    // Framing error check
+                    xor_result = RxD ^ temp_out;
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                        Rx_FERROR = 1'b1;   // framing error detected
+                    else 
+                        Rx_FERROR = Rx_FERROR;
+                    
+                    // Parity error check
                     if(temp_out != expected_parity)     // if xor is not the expected one, it means we got a change in the first period
                         Rx_PERROR <= 1'b1;  // parity error detected
                     else
                         Rx_PERROR <= Rx_PERROR;
-
-                // Framing error check 
-                xor_result = RxD ^ temp_out;
-                if(xor_result == 1'b1)     // if xor gives 1 it means we got a change in the first period
-                    Rx_FERROR = 1'b1;   // framing error detected
-                else
-                    Rx_FERROR = Rx_FERROR;
-                end   
+                end 
             end  
 
             STOP : begin
-                if(counter_1_period == 1)
-                    temp_out = temp_out;// do nothing
-                else if(counter_1_period == 2) begin
+                expected_parity = ^(Rx_DATA);
+
+                // Framing error check 
+                if(counter_1_period == 2)
                     temp_out = RxD; //first sample of the bit at the second posedge of clk. It is zero for start bit
-                    if(temp_out != 1'b1)
-                        Rx_FERROR = 1'b1;  // framing error detected
-                    else
-                        Rx_FERROR = Rx_FERROR;
-                end
-                else begin
+                else if(counter_1_period == 4 || counter_1_period == 8 || 
+                        counter_1_period == 10 || counter_1_period == 12 || 
+                        counter_1_period == 14) begin
+                    
+                    // Framing error check
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)     // if xor gives 1 it means we got a change in the first period
-                        Rx_FERROR = 1'b1;  // framing error detected
-                    else
+                    if(xor_result == 1'b1 || temp_out != 1'b1)
+                        Rx_FERROR = 1'b1;   // framing error detected
+                    else 
                         Rx_FERROR = Rx_FERROR;
-                end   
+                end 
             end  
 
             OUTPUT :
                 Rx_VALID = ~(Rx_FERROR | Rx_PERROR);
+                
         endcase 
     end
 
@@ -357,62 +393,17 @@ always @ (current_state or posedge clk)
 //		Counter for 1 period of Rx_sample_ENABLE	//
 //////////////////////////////////////////////////////
 
-// rises_in_1_period are the number of clock rises_in_1_period in an Rx_sample_ENABLE period
-always @ (baud_select)
+always@(posedge Rx_sample_ENABLE or posedge reset)
 begin
-    case(baud_select)
-        3'b000 : begin
-            rises_in_1_period = 14'd10416; // == 14'd
-            rises_in_half_period = 14'd5208; // == floor(rises_in_1_period/2))
-        end
-        3'b001 : begin 
-            rises_in_1_period = 14'd2604;
-            rises_in_half_period = 14'd1302;
-        end
-        3'b010 : begin
-            rises_in_1_period = 14'd652;
-            rises_in_half_period = 14'd326;
-        end
-        3'b011 : begin
-            rises_in_1_period = 14'd326;
-            rises_in_half_period = 14'd163;
-        end
-        3'b100 : begin 
-            rises_in_1_period = 14'd162;
-            rises_in_half_period = 14'd81;
-        end
-        3'b101 : begin
-            rises_in_1_period = 14'd82;
-            rises_in_half_period = 14'd41;
-        end
-        3'b110 : begin 
-            rises_in_1_period = 14'd54;
-            rises_in_half_period = 14'd27;
-        end
-        3'b111 : begin 
-            rises_in_1_period = 14'd28;
-            rises_in_half_period = 14'd14;
-        end
-    endcase  
-end
-
-always@(posedge clk or posedge reset)
-begin
-	if (reset)
-	begin
-		counter_1_period = 14'd0;
+	if (reset) begin
+		counter_1_period = 1;
 	end	
   
-	else 
-	begin
-		if (counter_1_period == rises_in_1_period)
-		begin
-			counter_1_period = 14'd1;
-		end
+	else begin
+		if (counter_1_period == 16)
+		    counter_1_period = 1;
 		else
-		begin
 			counter_1_period = counter_1_period + 1;
-		end
 	end
 end
 endmodule
