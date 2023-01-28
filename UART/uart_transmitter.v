@@ -1,26 +1,28 @@
 `timescale 1ns / 1ps
-`include "baud_rate.v"
+`include "baud_controller.v"
 
-module uart_transmitter(reset, clk, Tx_DATA, baud_select, Tx_WR, Tx_EN, TxD, Tx_BUSY); 
+module uart_transmitter(reset, clk, Tx_DATA, baud_select, Tx_WR, Tx_EN, TxD, Tx_BUSY);
 
-input clk, reset; 
-input [7:0] Tx_DATA; 
-input [2:0] baud_select; 
-input Tx_EN; 
-input Tx_WR; 
+input clk, reset;
+input [7:0] Tx_DATA;
+input [2:0] baud_select;
+input Tx_EN;
+input Tx_WR;
 
-output TxD; 
-output Tx_BUSY; 
+output TxD;
+output Tx_BUSY;
 
 reg TxD;
-reg Tx_BUSY; //1 when transmitter already sends data
+reg Tx_BUSY; //1 when transmitter sends data
 reg [3:0] current_state, next_state;
 reg [7:0] temp_data; //stores the Tx_DATA when the transmission starts
 wire Tx_sample_ENABLE; // output of Baud Rate Generator
+
+//!
 reg [4:0] counter_1_period = 5'd00000;
 reg [4:0] rises_in_1_period = 5'd00000;
 
-parameter WAIT = 4'b0000, 
+parameter WAIT = 4'b0000,
           START = 4'b0001,
           D0 = 4'b0010,
           D1 = 4'b0011,
@@ -33,155 +35,119 @@ parameter WAIT = 4'b0000,
           PARITY = 4'b1010,
           STOP = 4'b1011;
 
-always @ (posedge clk or posedge reset)         
+always @ (posedge Tx_sample_ENABLE or posedge reset)        
     // transmitter leaves WAIT state only if Tx_EN is 1
-	begin : STATE_MEMORY
-      if (~reset || ~Tx_EN)  
+    //!TxEn???
+    begin : STATE_MEMORY
+        if (reset|| ~Tx_EN)  
             current_state <= WAIT;              
         else        
             current_state <= next_state;                
     end
-    
+   
 baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_select(baud_select), .sample_ENABLE(Tx_sample_ENABLE));
 
-  always @ (posedge clk)
+  always @ (current_state or posedge Tx_sample_ENABLE)
     begin: NEXT_STATE_LOGIC
         case(current_state)
+
             WAIT: begin
-                if(Tx_WR == 1'b1)
+                if(Tx_WR == 1'b1) 
                     next_state = START;
-                else 
+                else
                     next_state = WAIT;
             end
 
             START: begin
-                if(counter_1_period == 0)
+                if(counter_1_period  == 16)
                     next_state = D0;
-                else 
+                else
                     next_state = START;
             end
 
             D0: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = D1;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = D1;
                 else
-                    begin
-                        next_state = D0;
-                    end
+                    next_state = D0;
             end
 
             D1: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = D2;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = D2;
                 else
-                    begin
-                        next_state = D1;
-                    end
+                    next_state = D1;
             end
 
             D2: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = D3;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = D3;
                 else
-                    begin
-                        next_state = D2;
-                    end
+                    next_state = D2;
             end
 
             D3: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = D4;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = D4;
                 else
-                    begin
-                        next_state = D3;
-                    end
+                    next_state = D3;
             end
 
             D4: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = D5;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = D5;
                 else
-                    begin
-                        next_state = D4;
-                    end
+                    next_state = D4;
             end
 
             D5: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = D6;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = D6;
                 else
-                    begin
-                        next_state = D5;
-                    end
+                    next_state = D5;
             end
 
             D6: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = D7;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = D7;
                 else
-                    begin
-                        next_state = D6;
-                    end
+                    next_state = D6;
             end
 
             D7: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = PARITY;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = PARITY;
                 else
-                    begin
-                        next_state = D7;
-                    end
+                    next_state = D7;
             end
 
             PARITY: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = STOP;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = STOP;
                 else
-                    begin
-                        next_state = PARITY;
-                    end
+                    next_state = PARITY;
             end
 
-            
+           
             STOP: begin
-                if(counter_1_period == 0) 
-                    begin
-                        next_state = WAIT;
-                    end
+                if(counter_1_period  == 16)
+                    next_state = WAIT;
                 else
-                    begin
-                        next_state = STOP;
-                    end
+                    next_state = STOP;
             end
         endcase
     end
-    
-  always @ (posedge clk)
+   
+  always @ (current_state or posedge Tx_sample_ENABLE)
     begin: OUTPUT_LOGIC
         case(current_state)
             WAIT: begin
                 temp_data = Tx_DATA;
                 Tx_BUSY = 1'b0; // ready to take input data
+                counter_1_period = 1;
+                TxD = 1'b1; 
             end
-            
+           
             START: begin
                 TxD = 1'b0; // send start bit
                 Tx_BUSY = 1'b1; // transmitter is busy
@@ -220,9 +186,9 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
             end
 
             PARITY: begin
-                TxD = ^(temp_data);   
+                TxD = ^(temp_data);  
                 // xor of the temp_data gives 1 when we have odd sum of 1'b1
-                // xor of the temp_data gives 0 when we have even sum of 1'b1 
+                // xor of the temp_data gives 0 when we have even sum of 1'b1
             end
 
             STOP: begin
@@ -231,54 +197,50 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
         endcase
     end
 
-always @ (baud_select)
-begin
-    case(baud_select)
-        3'b000 : begin
-            rises_in_1_period = 10417;
-        end
-        3'b001 : begin 
-            rises_in_1_period = 2604;
-        end
-        3'b010 : begin
-            rises_in_1_period = 651;
-        end
-        3'b011 : begin
-            rises_in_1_period = 326;
-        end
-        3'b100 : begin 
-            rises_in_1_period = 163;
-        end
-        3'b101 : begin
-            rises_in_1_period = 81;
-        end
-        3'b110 : begin 
-            rises_in_1_period = 54;
-        end
-        3'b111 : begin 
-            rises_in_1_period = 27;
-        end
-    endcase  
-end
+// 1 period is consedered the time dt = 16*1/BR
+// always @ (baud_select)
+// begin
+//     case(baud_select)
+//         3'b000 : begin
+//             rises_in_1_period = 10417;
+//         end
+//         3'b001 : begin
+//             rises_in_1_period = 2604;
+//         end
+//         3'b010 : begin
+//             rises_in_1_period = 651;
+//         end
+//         3'b011 : begin
+//             rises_in_1_period = 326;
+//         end
+//         3'b100 : begin
+//             rises_in_1_period = 163;
+//         end
+//         3'b101 : begin
+//             rises_in_1_period = 81;
+//         end
+//         3'b110 : begin
+//             rises_in_1_period = 54;
+//         end
+//         3'b111 : begin
+//             rises_in_1_period = 27;
+//         end
+//     endcase  
+// end
 
-always@(posedge Tx_sample_ENABLE or posedge reset)
-begin
-	if (reset)
-	begin
-		counter_1_period = 0;
-	end	
-  
-	else 
-	begin
-		if (counter_1_period == rises_in_1_period)
-		begin
-			counter_1_period = 0;
-		end
-		else
-		begin
-			counter_1_period = counter_1_period + 1;
-		end
-	end
+always@(posedge Tx_sample_ENABLE or posedge reset) begin
+    if (reset) begin
+        counter_1_period = 1;
+    end
+ 
+    else begin
+        if (counter_1_period == 16) begin
+            counter_1_period = 1;
+        end
+        else begin
+            counter_1_period = counter_1_period + 1;
+        end
+    end
 end
 
 endmodule
