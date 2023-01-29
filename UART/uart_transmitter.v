@@ -33,7 +33,8 @@ parameter WAIT = 4'b0000,
           D6 = 4'b1000,
           D7 = 4'b1001,
           PARITY = 4'b1010,
-          STOP = 4'b1011;
+          STOP = 4'b1011,
+          POST_STOP_PERIOD = 4'b1100;
 
 always @ (posedge Tx_sample_ENABLE or posedge reset)        
     // transmitter leaves WAIT state only if Tx_EN is 1
@@ -131,9 +132,18 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
            
             STOP: begin
                 if(counter_1_period  == 16)
-                    next_state = WAIT;
+                    next_state = POST_STOP_PERIOD;
                 else
                     next_state = STOP;
+            end    
+
+            // Period before busy drops to 0, in order to prevent
+            // overlapping of valid and start bit
+            POST_STOP_PERIOD: begin
+                if(counter_1_period  == 2)
+                    next_state = WAIT;
+                else
+                    next_state = POST_STOP_PERIOD;
             end
         endcase
     end
@@ -193,6 +203,10 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
 
             STOP: begin
                 TxD = 1'b1; // send stop bit
+            end
+
+            POST_STOP_PERIOD: begin
+                TxD = 1'b1;
             end
         endcase
     end
