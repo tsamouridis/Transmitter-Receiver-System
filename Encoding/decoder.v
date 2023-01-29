@@ -1,11 +1,18 @@
 `timescale 1ns / 1ps
 
-module decoder(in_char1, in_char2, char1, char2);
-	input [3:0] in_char1, in_char2; 
-	output [3:0] char1, char2; 
+module decoder(data_in, data_out);
+	input[7:0] data_in;
+	output[7:0] data_out;
 
-	reg [3:0] char1, char1;
+	wire [3:0] char1, char2; 
+	wire [3:0] out_char1, out_char2; 
+	wire [7:0] data_out;
 	
-	assign char1 = char1 - 1;
-    assign char2 = char2 - 1;
+	assign char1 = data_in[3:0];
+	assign char2 = data_in[7:4];
+	assign out_char1 = char1 - 1'b1;
+    assign out_char2 = char2 - 1'b1;
+
+	assign data_out[3:0] = out_char1;
+	assign data_out[7:4] = out_char2; 
 endmodule

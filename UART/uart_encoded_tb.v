@@ -5,7 +5,7 @@
 
 `timescale 1ns / 1ps
 
-module uart_tb;
+module uart_encoded_tb;
 
 reg give_clk1, give_clk2, give_reset;
 reg [2:0] give_baud_select; 
@@ -17,7 +17,7 @@ wire Tx_BUSY;
 wire an0, an1, an2, an3;
 wire a, b, c, d, e, f, g, dp;
 
-uart_system system_tb(.clk1(give_clk1), .clk2(give_clk2), .reset(give_reset), .baud_select(give_baud_select),
+uart_encoded system_encoded_tb(.clk1(give_clk1), .clk2(give_clk2), .reset(give_reset), .baud_select(give_baud_select),
                     .Rx_EN(give_Rx_EN), .Tx_EN(give_Tx_EN), .Tx_WR(give_Tx_WR), .Tx_DATA(give_Tx_DATA), 
                     .Tx_BUSY(Tx_BUSY), .AN0(an0), .AN1(an1), .AN2(an2), .AN3(an3),
                     .a(a), .b(b), .c(c), .d(d), .e(e), .f(f), .g(g), .dp(dp));
