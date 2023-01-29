@@ -10,8 +10,6 @@ reg give_RxD;
 wire [7:0] Rx_DATA; 
 wire Rx_FERROR, Rx_PERROR, Rx_VALID;
 
-reg transmitter_fake_clk;
-
 uart_receiver receiver_test(.reset(give_reset),
 						.clk(give_clk),
 						.Rx_DATA(Rx_DATA),
@@ -25,7 +23,6 @@ uart_receiver receiver_test(.reset(give_reset),
 initial begin
 
 	give_clk = 0; // our clock is initialy set to 0
-	transmitter_fake_clk = 1;
 	give_RxD = 1'b1;
 	give_reset = 1; // our reset signal is initialy set to 1
 
@@ -43,8 +40,6 @@ initial begin
 end  
 	
 always #10 give_clk = ~ give_clk; // create our clock, with a period of 20ns
-
-always #280 transmitter_fake_clk = ~ transmitter_fake_clk; //!
   
 always@(posedge give_clk) begin
 
@@ -72,7 +67,8 @@ always@(posedge give_clk) begin
 
 	give_RxD = 1; #8960; //parity (right)
 	give_RxD = 1; #8960; //stop
-
+	#8960;
+	$finish;
 	// ///////////////////////////////////////////////
 	// // Parity error 
 	// //           [start] [  DATA  ] [parity] [stop]
