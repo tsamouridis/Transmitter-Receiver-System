@@ -57,21 +57,21 @@ always@(posedge give_clk) begin
 	//           [start] [DATA{LSB->MSB}] [parity] [stop]
 	// message =    0    101 000 01     1       1
 	////////////////////////////////////////////////
-	#6000;
-	give_RxD = 0; #560; //start
+	#5710;
+	give_RxD = 0; #8960; //start
 
 	// DATA = 101 000 01
-	give_RxD = 1; #560; //D0
-	give_RxD = 0; #560; //D1
-	give_RxD = 1; #560; //D2
-	give_RxD = 0; #560; //D3
-	give_RxD = 0; #560; //D4
-	give_RxD = 0; #560; //D5
-	give_RxD = 0; #560; //D6
-	give_RxD = 1; #560; //D7
+	give_RxD = 1; #8960; //D0
+	give_RxD = 0; #8960; //D1
+	give_RxD = 1; #8960; //D2
+	give_RxD = 0; #8960; //D3
+	give_RxD = 0; #8960; //D4
+	give_RxD = 0; #8960; //D5
+	give_RxD = 0; #8960; //D6
+	give_RxD = 1; #8960; //D7
 
-	give_RxD = 1; #560; //parity (right)
-	give_RxD = 1; #560; //stop
+	give_RxD = 1; #8960; //parity (right)
+	give_RxD = 1; #8960; //stop
 
 	// ///////////////////////////////////////////////
 	// // Parity error 
@@ -79,20 +79,20 @@ always@(posedge give_clk) begin
 	// // message =    0    101 000 01     0       1
 	// ///////////////////////////////////////////////
 	// #6000;
-	// give_RxD = 0; #560; //start
+	// give_RxD = 0; #8960; //start
 
 	// // DATA = 101 000 01
-	// give_RxD = 1; #560; //D0
-	// give_RxD = 0; #560; //D1
-	// give_RxD = 1; #560; //D2
-	// give_RxD = 0; #560; //D3
-	// give_RxD = 0; #560; //D4
-	// give_RxD = 0; #560; //D5
-	// give_RxD = 0; #560; //D6
-	// give_RxD = 1; #560; //D7
+	// give_RxD = 1; #8960; //D0
+	// give_RxD = 0; #8960; //D1
+	// give_RxD = 1; #8960; //D2
+	// give_RxD = 0; #8960; //D3
+	// give_RxD = 0; #8960; //D4
+	// give_RxD = 0; #8960; //D5
+	// give_RxD = 0; #8960; //D6
+	// give_RxD = 1; #8960; //D7
 
-	// give_RxD = 0; #560; //parity (false)
-	// give_RxD = 1; #560; //stop
+	// give_RxD = 0; #8960; //parity (false)
+	// give_RxD = 1; #8960; //stop
 
 	// ///////////////////////////////////////////////
 	// // Framing error error 
@@ -100,22 +100,22 @@ always@(posedge give_clk) begin
 	// // message =    0    [1]01 000 01     0       1
 	// //////////////////////////////////////////////
 	// #6000;
-	// give_RxD = 0; #560; //start
+	// give_RxD = 0; #8960; //start
 
 	// // DATA = 101 000 01
 	// give_RxD = 1; #160; //D0
 	// give_RxD = 0; #400; //noisy D0 
 
-	// give_RxD = 0; #560; //D1
-	// give_RxD = 1; #560; //D2
-	// give_RxD = 0; #560; //D3
-	// give_RxD = 0; #560; //D4
-	// give_RxD = 0; #560; //D5
-	// give_RxD = 0; #560; //D6
-	// give_RxD = 1; #560; //D7
+	// give_RxD = 0; #8960; //D1
+	// give_RxD = 1; #8960; //D2
+	// give_RxD = 0; #8960; //D3
+	// give_RxD = 0; #8960; //D4
+	// give_RxD = 0; #8960; //D5
+	// give_RxD = 0; #8960; //D6
+	// give_RxD = 1; #8960; //D7
 
-	// give_RxD = 1; #560; //parity (right)
-	// give_RxD = 1; #560; //stop
+	// give_RxD = 1; #8960; //parity (right)
+	// give_RxD = 1; #8960; //stop
 	// ! when there is ferror there is perror too?
 	 
 end

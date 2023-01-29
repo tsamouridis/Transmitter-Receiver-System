@@ -18,7 +18,7 @@ parameter FFFF = 16'b1100_1100_1100_1100;
   
 always @ (posedge valid) begin 
 	if(counter == 1) 
-	temp1 <= data_in;
+		temp1 <= data_in;
 	else begin
 		if (error_detected == 1'b0) begin
 			out[7:0] <= temp1;
@@ -39,6 +39,7 @@ end
 always@(posedge reset or posedge valid or posedge PERROR or posedge FERROR)
 begin
 	if (reset) begin
+		error_detected = 1'b0;
 		counter = 0;
 	end	
   

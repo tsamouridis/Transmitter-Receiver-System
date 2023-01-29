@@ -39,7 +39,7 @@ always @ (posedge Tx_sample_ENABLE or posedge reset)
     // transmitter leaves WAIT state only if Tx_EN is 1
     //!TxEn???
     begin : STATE_MEMORY
-        if (reset|| ~Tx_EN)  
+        if (reset || ~Tx_EN)  
             current_state <= WAIT;              
         else        
             current_state <= next_state;                
@@ -52,7 +52,7 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
         case(current_state)
 
             WAIT: begin
-                if(Tx_WR == 1'b1) 
+                if(Tx_WR == 1'b1)  //! and Tx_BUSY == 0???
                     next_state = START;
                 else
                     next_state = WAIT;
