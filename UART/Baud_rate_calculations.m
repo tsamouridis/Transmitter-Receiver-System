@@ -1,5 +1,3 @@
-// Calculations for the Baud Rate 
-
 baud_rate = [300 1200 4800 9600 19200 38400 57600 115200];
 
 T_sample_desired_nanosec = 1./(16.*baud_rate) .* 1e9;

@@ -142,7 +142,7 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
             // Period before busy drops to 0, in order to prevent
             // overlapping of valid and start bit
             POST_STOP_PERIOD: begin
-                if(counter_1_period  == 4)
+                if(counter_1_period  == 2)
                     next_state = WAIT;
                 else
                     next_state = POST_STOP_PERIOD;

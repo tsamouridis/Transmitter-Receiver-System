@@ -8,6 +8,7 @@
 `include "FourDigitLEDdriver.v"
 `include "register.v"
 
+//! maybe 2 reset as input?
 // Uart-LED-displays system implementation 
 module uart(clk1, clk2, reset, baud_select,
                     Rx_EN, Tx_EN, Tx_WR, Tx_DATA, Tx_BUSY,

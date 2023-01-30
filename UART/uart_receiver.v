@@ -3,14 +3,14 @@
 
 `timescale 1ns / 1ps
 
-// Uart Receiver implementation
+// Uart Receiver implmentation
 module uart_receiver(reset, clk, Rx_DATA, baud_select, RX_EN, RxD, Rx_FERROR, Rx_PERROR, Rx_VALID);
 
 input clk, reset;
 input [2:0] baud_select;
 input RX_EN;
-input RxD;
 
+input RxD;
 output [7:0] Rx_DATA;
 output Rx_FERROR; // Framing Error //
 output Rx_PERROR; // Parity Error // 
@@ -112,7 +112,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                     next_state = OUTPUT;
                  else 
                     next_state = STOP; 
-            OUTPUT : if(counter_1_period == 2)
+            OUTPUT : if(counter_1_period == 16)
                     next_state = WAIT;
                  else 
                     next_state = OUTPUT;

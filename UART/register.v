@@ -1,9 +1,6 @@
-// Bouletsis Alexis
-// Tsamouridis Anastasios Athanasios
-
 `timescale 1ns / 1ps
 
-// Special Register for the parallelization of input of LED driver.
+// Register for the parallelization of input of LED driver.
 // The register modules checks if the input is considered as valid by the receiver
 // and outputs only valid data
 module register(reset, data_in, valid, PERROR, FERROR, out);
@@ -48,7 +45,7 @@ begin
 	end	
   
 	else begin
-		if (counter == 1 && valid == 1'b1)
+		if (counter == 1)
 		    counter = 0;
 		else
 			counter = counter + 1;

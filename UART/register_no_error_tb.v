@@ -4,8 +4,8 @@
 `timescale 1ns / 1ps
 `include "register.v"
 
-// Register Testbench with error
-module register_error_tb;
+// Testbench for register of the system iwth valid input
+module register_no_error_tb;
 
 reg reset;
 reg [7:0] data_in; 
@@ -22,39 +22,23 @@ initial begin
     PERROR = 1'b0;
     FERROR = 1'b0;  
 
-	#400;
-	reset = 0;
+	#400; 
+	reset = 0; 	
+    data_in = 8'b1001101;   
+
+    #10;
+    valid = 1'b1;
 
     #10;
     valid = 1'b0;
-    PERROR = 1'b0;
-
-    #10;
-    valid = 1'b0;
-    PERROR = 1'b1;
 
     #10;
     data_in = 8'b11100011;
     
 	#10;
     valid = 1'b1;
-    PERROR = 1'b0; 
-    FERROR = 1'b0;
     
     #10 valid = 1'b0;
-    PERROR = 1'b0; 
-    FERROR = 1'b0;
-
-    // second data 
-    # 10 data_in = 8'b11111111;
-
-    # 10;
-    valid = 1'b1;    
-
-    #10;
-    valid = 1'b0;
-
-    $finish;
 end
 
 endmodule

@@ -30,7 +30,7 @@ initial begin
     give_Tx_EN = 1'b1;
     give_baud_select = 3'b111;
 
-    give_Tx_DATA = 8'b00010111;
+    give_Tx_DATA = 8'b10011001;
     #500 give_Tx_WR = 1'b1;
 end  
 
