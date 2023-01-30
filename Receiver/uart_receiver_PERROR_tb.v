@@ -3,8 +3,8 @@
 
 `timescale 1ns / 1ps
 
-// Testbench for the UART-LED-displays system
-module uart_receiver_tb;
+// Testbench for the UART-LED-displays system with PERROR output
+module uart_receiver_PERROR_tb;
 
 reg give_clk, give_reset;
 reg [2:0] give_baud_select; 
@@ -69,55 +69,10 @@ always@(posedge give_clk) begin
 	give_RxD = 0; #8960; //D6
 	give_RxD = 1; #8960; //D7
 
-	give_RxD = 1; #8960; //parity (right)
+	give_RxD = 0; #8960; //parity (false)
 	give_RxD = 1; #8960; //stop
 	#8960;
 	$finish;
-	// ///////////////////////////////////////////////
-	// // Parity error 
-	// //           [start] [  DATA  ] [parity] [stop]
-	// // message =    0    101 000 01     0       1
-	// ///////////////////////////////////////////////
-	// #6000;
-	// give_RxD = 0; #8960; //start
-
-	// // DATA = 101 000 01
-	// give_RxD = 1; #8960; //D0
-	// give_RxD = 0; #8960; //D1
-	// give_RxD = 1; #8960; //D2
-	// give_RxD = 0; #8960; //D3
-	// give_RxD = 0; #8960; //D4
-	// give_RxD = 0; #8960; //D5
-	// give_RxD = 0; #8960; //D6
-	// give_RxD = 1; #8960; //D7
-
-	// give_RxD = 0; #8960; //parity (false)
-	// give_RxD = 1; #8960; //stop
-
-	// ///////////////////////////////////////////////
-	// // Framing error error 
-	// //           [start] [  DATA  ] [parity] [stop]
-	// // message =    0    [1]01 000 01     0       1
-	// //////////////////////////////////////////////
-	// #6000;
-	// give_RxD = 0; #8960; //start
-
-	// // DATA = 101 000 01
-	// give_RxD = 1; #160; //D0
-	// give_RxD = 0; #400; //noisy D0 
-
-	// give_RxD = 0; #8960; //D1
-	// give_RxD = 1; #8960; //D2
-	// give_RxD = 0; #8960; //D3
-	// give_RxD = 0; #8960; //D4
-	// give_RxD = 0; #8960; //D5
-	// give_RxD = 0; #8960; //D6
-	// give_RxD = 1; #8960; //D7
-
-	// give_RxD = 1; #8960; //parity (right)
-	// give_RxD = 1; #8960; //stop
-	// ! when there is ferror there is perror too?
-	 
-end
+    end
 
 endmodule
