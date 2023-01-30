@@ -1,14 +1,19 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
+
 `include "LEDdecoder.v"
 
+// LED driver for 4 7-segment-LED-displays
 module FourDigitLEDdriver(reset, clk, signal_to_display, an3, an2, an1, an0, a, b, c, d, e, f, g, dp);
 
 input [15:0] signal_to_display; 
 output dp;
   
-input clk, reset; // add more inputs if needed
-output an3, an2, an1, an0; // our anodes
-output a, b, c, d, e, f, g;	//	our signals
+input clk, reset; 
+output an3, an2, an1, an0; // anodes
+output a, b, c, d, e, f, g;	//	signals
 
 //		    a
 //   	 ------
@@ -20,8 +25,8 @@ output a, b, c, d, e, f, g;	//	our signals
 //	     ------      .dp
 //			d
 
-wire a,b,c,d,e,f,g,dp;
-reg an0,an1,an2,an3;
+wire a, b, c, d, e, f, g, dp;
+reg an0, an1, an2, an3;
 wire [6:0] LED;
 
 reg [3:0] char; // based on your received message, use this 4bit signal to drive our decoder

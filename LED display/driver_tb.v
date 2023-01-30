@@ -1,32 +1,34 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
+// Testbench for the FourDigitLEDdriver
 module driver_tb;
 
-reg give_clk,give_reset;
+reg give_clk, give_reset;
 reg [15:0] give_signal_to_display;
   
-wire an3,an2,an1,an0;
-wire a,b,c,d,e,f,g,dp;
+wire an3, an2, an1, an0;
+wire a, b, c, d, e, f, g, dp;
 
 FourDigitLEDdriver driver_test(.reset(give_reset), .clk(give_clk), .signal_to_display(give_signal_to_display), .an3(an3), .an2(an2), .an1(an1), .an0(an0), .a(a), .b(b), .c(c), .d(d), .e(e), .f(f), .g(g), .dp(dp));
 
 initial begin
 
-	give_clk = 0; // our clock is initialy set to 0
-	give_reset = 1; // our reset signal is initialy set to 1
+	give_clk = 0; // clock is initialy set to 0
+	give_reset = 1; // reset signal is initialy set to 1
 
-	#400; // after 100 timing units, i.e. ns
+	#400; 
 					
 	give_reset = 0; // set reset signal to 0
 			
-	#20000 $finish;	 // after 10000 timing units, i.e. ns, finish our simulation
-end
-  
-initial begin
+	#20000 $finish;	 // after 20000 timing units, i.e. ns, finish our simulation
+
   $dumpfile("dump.vcd"); $dumpvars;
 end  
 	
-always #10 give_clk = ~ give_clk; // create our clock, with a period of 20ns
+always #10 give_clk = ~ give_clk; // clk with period of 20ns
 
 always@(posedge give_clk)
 begin
