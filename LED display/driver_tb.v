@@ -23,9 +23,9 @@ initial begin
 					
 	give_reset = 0; // set reset signal to 0
 			
-	#20000 $finish;	 // after 20000 timing units, i.e. ns, finish our simulation
+	#21000 $finish;	 // after 20000 timing units, i.e. ns, finish our simulation
 
-  $dumpfile("dump.vcd"); $dumpvars;
+	$dumpfile("dump.vcd"); $dumpvars;
 end  
 	
 always #10 give_clk = ~ give_clk; // clk with period of 20ns
@@ -33,13 +33,13 @@ always #10 give_clk = ~ give_clk; // clk with period of 20ns
 always@(posedge give_clk)
 begin
   
-  give_signal_to_display = 16'b1010_0001_1001_0100;
-  #5230 give_signal_to_display = 16'b1100_1100_0001_0000;
+  give_signal_to_display = 16'b1010_0001_1001_0100; //'-194'
+  #5230 give_signal_to_display = 16'b1100_1100_0001_0000; //'  10'
+  #5230 give_signal_to_display = 16'b1010_1100_0011_0010; // '- 32'
+  #5230 give_signal_to_display = 16'b1011_1011_1011_1011; // 'FFFF'
   #5230;
-//   #6130 give_signal_to_display = 16'b1010_1100_0011_0010;
-//   #6130 give_signal_to_display = 16'b1011_1011_1011_1011;
-//   #6130;
 end
 
   
 endmodule
+
