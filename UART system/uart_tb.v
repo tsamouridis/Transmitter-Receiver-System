@@ -23,7 +23,7 @@ uart_system system_tb(.clk1(give_clk1), .clk2(give_clk2), .reset(give_reset), .b
 
 initial begin
 
-	give_clk1 = 0;
+	give_clk1 = 1;
 	give_clk2 = 0;
 	give_reset = 1;
     give_baud_select = 3'b111;
