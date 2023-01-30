@@ -1,7 +1,11 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
 `include "decoder.v"
 
+// Testbench for decoder
 module decoder_tb;
 
 reg[7:0] data_in;

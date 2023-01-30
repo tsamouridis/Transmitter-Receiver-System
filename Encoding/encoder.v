@@ -1,5 +1,12 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
+// Encoder implementing a simple encoding
+// task by adding 1 to each of the
+// two 4-bit-characters that are given as
+// input of 8 bit
 module encoder(data_in, data_out);
 	input[7:0] data_in;
 	output[7:0] data_out;

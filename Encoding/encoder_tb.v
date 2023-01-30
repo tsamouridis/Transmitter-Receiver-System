@@ -1,7 +1,11 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
 `include "encoder.v"
 
+// Testbench for encoder
 module encoder_tb;
 
 reg[7:0] data_in;
