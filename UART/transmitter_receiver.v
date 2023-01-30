@@ -1,8 +1,12 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
 `include "uart_receiver.v"
 `include "uart_transmitter.v"
 
+// Cmbination of UART transmitter and UART receiver to test functionality
 module transmitter_receiver(clk1, clk2, reset1, reset2, baud_select,
                     Rx_EN, Tx_EN, Tx_WR, Tx_DATA, Tx_BUSY, Rx_VALID,
                     Rx_FERROR, Rx_PERROR, Rx_DATA);

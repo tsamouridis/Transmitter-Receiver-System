@@ -1,5 +1,11 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
+
+// Baud Rate Controller for the Receiver and Transmitter systems
+// using UART protocol
 module baud_controller(reset, clk, baud_select, sample_ENABLE);
 input clk, reset; 
 input [2:0] baud_select; 
@@ -7,7 +13,7 @@ output sample_ENABLE;
 
 reg [13:0] counter;
 reg sample_ENABLE;
-reg [13:0] reverse_sample_ENABLE = 4'd0; //! is it ok?
+reg [13:0] reverse_sample_ENABLE = 4'd0;
 
 always @ (baud_select)
 begin

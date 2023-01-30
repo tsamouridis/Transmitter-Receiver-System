@@ -1,10 +1,9 @@
-// module uart_system(clk1, clk2, reset, baud_select,
-//                     Rx_EN, Tx_EN, Tx_WR, Tx_DATA, Tx_BUSY
-//                     AN0, AN1, AN2, AN3,
-//                     a,b,c,d,e,f,g,dp);
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
 
 `timescale 1ns / 1ps
 
+// Testbench for the UART-LED-displays system
 module uart_tb;
 
 reg give_clk1, give_clk2, give_reset;
@@ -36,9 +35,8 @@ initial begin
         give_Tx_WR = 1'b0;  
 
 	#100;		
-	give_reset = 0; // set reset signal to 0
+	give_reset = 0; 
 
-    //! add the rest
     #100;
     give_Tx_DATA = 8'b10010100;
 
@@ -64,7 +62,6 @@ initial begin
     #300000 $finish;
 end  
 	
-always #10 give_clk1 = ~ give_clk1; // create our clock, with a period of 20ns
-always #10 give_clk2 = ~ give_clk2; // create our clock, with a period of 20ns
-
+always #10 give_clk1 = ~ give_clk1; 
+always #10 give_clk2 = ~ give_clk2; 
 endmodule

@@ -1,4 +1,9 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
+
+// Uart Receiver implmentation
 module uart_receiver(reset, clk, Rx_DATA, baud_select, RX_EN, RxD, Rx_FERROR, Rx_PERROR, Rx_VALID);
 
 input clk, reset;
@@ -18,9 +23,6 @@ reg [7:0] Rx_DATA;
 
 reg [3:0] current_state, next_state;
 reg [4:0] counter_1_period = 5'd00000;
-// reg [14:0] rises_in_1_period;
-// reg [14:0] rises_in_half_period;
-// reg [4:0] counter_8_periods = 5'd00000;
 reg temp_out;
 reg xor_result;
 reg expected_parity;
@@ -59,11 +61,6 @@ always @ (posedge Rx_sample_ENABLE or posedge reset)
 always @ (current_state or posedge Rx_sample_ENABLE)
     begin: NEXT_STATE_LOGIC
     // period stands for one period of Rx_sample_ENABLE
-    // Stays at WAIT till starting bit (till RxD becomes zero)
-    // Stays at START for 1 period
-    // Stays at D_i for 1 period, i = 0, 1,...,7
-    // Stays at PARITY for 1 period
-    // Stays at OUTPUT for 1 period
         case (current_state)
             WAIT : if(RxD == 0) begin
                     next_state = START;
@@ -124,10 +121,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
 
   always @ (current_state or posedge Rx_sample_ENABLE)
     begin: OUTPUT_LOGIC
-        // For the formation of RxD, receiver samples the received message RxDATA
-        // at every positive edge of clock, except for the clock that appears at
-        // the (ideal-without noise) edges of the RxDATA 
-
         case (current_state)
             WAIT : begin
                 Rx_DATA = 8'b0;
@@ -146,7 +139,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change 
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -163,15 +156,13 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
                 end
                 else
                     temp_out = temp_out;// do nothing
-
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[0] = RxD;
                 else
@@ -186,7 +177,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -194,7 +185,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                 else
                     temp_out = temp_out;// do nothing
 
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[1] = RxD;
                 else
@@ -209,7 +199,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -217,7 +207,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                 else
                     temp_out = temp_out;// do nothing
 
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[2] = RxD;
                 else
@@ -232,7 +221,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -240,7 +229,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                 else
                     temp_out = temp_out;// do nothing
 
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[3] = RxD;
                 else
@@ -255,7 +243,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -263,7 +251,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                 else
                     temp_out = temp_out;// do nothing
 
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[4] = RxD;
                 else
@@ -278,7 +265,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -286,7 +273,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                 else
                     temp_out = temp_out;// do nothing
 
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[5] = RxD;
                 else
@@ -301,7 +287,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -309,7 +295,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                 else
                     temp_out = temp_out;// do nothing
 
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[6] = RxD;
                 else
@@ -324,7 +309,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                         counter_1_period == 14) begin
 
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;
@@ -332,7 +317,6 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                 else
                     temp_out = temp_out;// do nothing
 
-                // when half a period(approximately sometimes) passes show RxD in the output
                 if(Rx_FERROR == 0 && counter_1_period == 8)
                     Rx_DATA[7] = RxD;
                 else
@@ -351,7 +335,7 @@ always @ (current_state or posedge Rx_sample_ENABLE)
                     
                     // Framing error check
                     xor_result = RxD ^ temp_out;
-                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change in the first period
+                    if(xor_result == 1'b1)   // if xor gives 1 it means we got a change
                         Rx_FERROR = 1'b1;   // framing error detected
                     else 
                         Rx_FERROR = Rx_FERROR;

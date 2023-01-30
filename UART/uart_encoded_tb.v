@@ -1,7 +1,5 @@
-// module uart_system(clk1, clk2, reset, baud_select,
-//                     Rx_EN, Tx_EN, Tx_WR, Tx_DATA, Tx_BUSY
-//                     AN0, AN1, AN2, AN3,
-//                     a,b,c,d,e,f,g,dp);
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
 
 `timescale 1ns / 1ps
 

@@ -1,6 +1,10 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 `include "baud_controller.v"
 
+// Implementation of UART transmitter
 module uart_transmitter(reset, clk, Tx_DATA, baud_select, Tx_WR, Tx_EN, TxD, Tx_BUSY);
 
 input clk, reset;
@@ -13,12 +17,11 @@ output TxD;
 output Tx_BUSY;
 
 reg TxD;
-reg Tx_BUSY; //1 when transmitter sends data
+reg Tx_BUSY; //1 when transmitter cannot send data
 reg [3:0] current_state, next_state;
 reg [7:0] temp_data; //stores the Tx_DATA when the transmission starts
 wire Tx_sample_ENABLE; // output of Baud Rate Generator
 
-//!
 reg [4:0] counter_1_period = 5'd00000;
 reg [4:0] rises_in_1_period = 5'd00000;
 
@@ -38,7 +41,6 @@ parameter WAIT = 4'b0000,
 
 always @ (posedge Tx_sample_ENABLE or posedge reset)        
     // transmitter leaves WAIT state only if Tx_EN is 1
-    //!TxEn???
     begin : STATE_MEMORY
         if (reset || ~Tx_EN)  
             current_state <= WAIT;              
@@ -53,7 +55,7 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
         case(current_state)
 
             WAIT: begin
-                if(Tx_WR == 1'b1)  //! and Tx_BUSY == 0???
+                if(Tx_WR == 1'b1)
                     next_state = START;
                 else
                     next_state = WAIT;
@@ -210,37 +212,6 @@ baud_controller baud_controller_tx_instance(.reset(reset), .clk(clk), .baud_sele
             end
         endcase
     end
-
-// 1 period is consedered the time dt = 16*1/BR
-// always @ (baud_select)
-// begin
-//     case(baud_select)
-//         3'b000 : begin
-//             rises_in_1_period = 10417;
-//         end
-//         3'b001 : begin
-//             rises_in_1_period = 2604;
-//         end
-//         3'b010 : begin
-//             rises_in_1_period = 651;
-//         end
-//         3'b011 : begin
-//             rises_in_1_period = 326;
-//         end
-//         3'b100 : begin
-//             rises_in_1_period = 163;
-//         end
-//         3'b101 : begin
-//             rises_in_1_period = 81;
-//         end
-//         3'b110 : begin
-//             rises_in_1_period = 54;
-//         end
-//         3'b111 : begin
-//             rises_in_1_period = 27;
-//         end
-//     endcase  
-// end
 
 always@(posedge Tx_sample_ENABLE or posedge reset) begin
     if (reset) begin

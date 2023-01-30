@@ -1,5 +1,9 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
+// Testbench for the UART-LED-displays system
 module uart_receiver_tb;
 
 reg give_clk, give_reset;

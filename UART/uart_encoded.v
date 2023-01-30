@@ -1,3 +1,6 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
 `include "uart_receiver.v"
@@ -8,6 +11,8 @@
 `include "encoder.v"
 
 //! maybe 2 reset as input?
+// implementation of the whole UART-LED-displays system with the encoding 
+// and decoding of input
 module uart_encoded(clk1, clk2, reset, baud_select,
                     Rx_EN, Tx_EN, Tx_WR, Tx_DATA, Tx_BUSY,
                     AN0, AN1, AN2, AN3,

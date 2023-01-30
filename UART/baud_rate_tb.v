@@ -1,5 +1,9 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
+// Testbench for Baud Rate Controller
 module baud_controller_tb;
 
 reg give_clk,give_reset;
@@ -19,9 +23,7 @@ initial begin
 	give_reset = 0; // set reset signal to 0
 			
 	#20000 $finish;	 // after 10000 timing units, i.e. ns, finish our simulation
-end
-  
-initial begin
+
   $dumpfile("dump.vcd"); $dumpvars;
 end  
 	

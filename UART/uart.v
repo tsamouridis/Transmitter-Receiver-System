@@ -1,3 +1,6 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 
 `include "uart_receiver.v"
@@ -6,6 +9,7 @@
 `include "register.v"
 
 //! maybe 2 reset as input?
+// Uart-LED-displays system implementation 
 module uart(clk1, clk2, reset, baud_select,
                     Rx_EN, Tx_EN, Tx_WR, Tx_DATA, Tx_BUSY,
                     AN0, AN1, AN2, AN3,
@@ -40,7 +44,5 @@ register register_instance(.reset(reset), .data_in(Rx_DATA), .valid(Rx_VALID), .
 
 FourDigitLEDdriver LEDdriver_instance(.reset(reset), .clk(clk2), .signal_to_display(signal_to_display), .an3(AN3), .an2(AN2), .an1(AN1),
                                       .an0(AN0), .a(a), .b(b), .c(c), .d(d), .e(e), .f(f), .g(g), .dp(dp));
-
-
 
 endmodule

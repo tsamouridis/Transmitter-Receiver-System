@@ -1,6 +1,10 @@
+// Bouletsis Alexis
+// Tsamouridis Anastasios Athanasios
+
 `timescale 1ns / 1ps
 `include "transmitter_receiver.v"
 
+//testbench for the UART receiver
 module transmitter_receiver_tb;
 
 reg clk1,clk2, reset1,reset2;
@@ -30,7 +34,7 @@ initial begin
         Tx_WR = 1'b0;  
 
 	#100;		
-	reset1 = 0; // set reset signal to 0
+	reset1 = 0; 
     reset2 = 0;
 
     #100;

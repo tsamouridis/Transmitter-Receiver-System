@@ -1,7 +1,8 @@
 `timescale 1ns / 1ps
 
-// ! add ferror perror as input to give error output for the led
-
+// Register for the parallelization of input of LED driver.
+// The register modules checks if the input is considered as valid by the receiver
+// and outputs only valid data
 module register(reset, data_in, valid, PERROR, FERROR, out);
 
 input[7:0] data_in;
