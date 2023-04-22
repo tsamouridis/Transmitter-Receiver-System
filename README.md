@@ -16,4 +16,4 @@ A more thorough description of the system implementation, along with schematics 
 
 ## Authors 
 [Bouletsis Alexis](https://github.com/alexisbouletsis) <br>
-[Thanasis Tsamouridis](https://github.com/tsamouridis) <br>
+[Tsamouridis Thanasis](https://github.com/tsamouridis) <br>
