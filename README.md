@@ -13,3 +13,7 @@ The total schematic of the system is provided for more clarity:
 <img src="https://github.com/tsamouridis/Transmitter-Receiver-System/blob/master/media/diagram.png" alt="Schematic" width="500" height="600" class="center">
 
 A more thorough description of the system implementation, along with schematics provided by the simulation tool and results from the testbenches for each component is provided in greek in the <a href="https://github.com/tsamouridis/Transmitter-Receiver-System/blob/master/Report_UART.pdf">Project Report</a>.
+
+## Authors 
+[Bouletsis Alexis](https://github.com/alexisbouletsis) <br>
+[Thanasis Tsamouridis](https://github.com/tsamouridis) <br>
