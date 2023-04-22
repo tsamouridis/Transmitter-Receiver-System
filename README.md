@@ -2,7 +2,7 @@
 Implementation of Transmitter-Receiver System using UART protocol and representation of output in 7-segment LED displays
 
 # Description
-This folder contains the implementation of a **Uart Transmitter-Receiver system**, which is a system for serial, 1-by-1 bit, data transmition. In this implementation the characters being transmitted are assumed to be the numbers 1-9 and the characters 'F', '-' and '&nbsp;' (space). These characters are used to transmit 4-character-messages that come from sensors and are represented in the following way: [‘space’|‘-’][‘space’|1-9] [‘space’|0-9] [0-9], where | represents the logical or, eg: '-194', '&nbsp;-87'. Error message is represented by the message 'FFFF'.
+This repository contains the implementation of a **Uart Transmitter-Receiver system**, which is a system for serial, 1-by-1 bit, data transmition. In this implementation the characters being transmitted are assumed to be the numbers 1-9 and the characters 'F', '-' and '&nbsp;' (space). These characters are used to transmit 4-character-messages that come from sensors and are represented in the following way: [‘space’|‘-’][‘space’|1-9] [‘space’|0-9] [0-9], where | represents the logical or, eg: '-194', '&nbsp;-87'. Error message is represented by the message 'FFFF'.
 
 In addition to the transmition system, a **4-digit-display system** is designed in order to display the message in 7-segment LED displays. The 4 displays are not simultaneously on when displaying a particular message. They operate one after the other in a circular order in very high speed. This very high speed makes it possible to display a message only using one display driver and still the flickering not being perceived.
 
